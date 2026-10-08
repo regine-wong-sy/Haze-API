@@ -28,9 +28,11 @@ def get_level(psi):
     else:
         return "Hazardous"
 
-app.send_static_file("index.html")
-@app.route("/haze")
+@app.route("/")
+def home():
+    return app.send_static_file("index.html")
 
+@app.route("/haze")
 def haze():
     #caching
     global cached_psi, cached_at
