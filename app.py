@@ -2,6 +2,9 @@ from flask import Flask, request
 import requests
 import time
 import math
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 app = Flask(__name__)
 
 cached_psi = None
@@ -90,5 +93,36 @@ def haze():
 
     return {"query": query, "region": region, "psi": psi[region], "level": get_level(psi[region])}
 
+@app.route("/haze/history")
+def haze_history():
+    region = request.args.get("region")
+    if region is None:
+        return {"error": "No region"}, 400
+    region = region.lower()
+    if region in AREA_TO_REGION:
+        region = AREA_TO_REGION[region]
+
+    today = datetime.now(ZoneInfo("Asia/Singapore")).strftime("%Y-%m-%d")
+    response = requests.get("https://api-open.data.gov.sg/v2/real-time/api/psi",
+                            params={"date": today})
+    body = response.json()
+    items = body["data"]["items"]
+
+    valid = list(items[0]["readings"]["psi_twenty_four_hourly"].keys())
+    if region not in valid:
+        return {"error": "Invalid Region", "valid_regions": valid}, 400
+
+
+    readings = []
+    for item in items:
+        readings.append({
+            "time": item["timestamp"],
+            "psi": item["readings"]["psi_twenty_four_hourly"][region]   
+        })
+
+
+    readings.reverse()
+
+    return {"region": region, "readings": readings}
 if __name__ == "__main__":
     app.run(port=8080, debug=True)
