@@ -23,14 +23,28 @@
     <button type="button" id="check-btn">Check PSI</button>
     </div>
 
-    <p id="result"></p>
+    <p>
+        <span id="info"></span>
+        <span id="level"></span>
+    </p>
 
 
 
     <script>
+
+
+        const LEVEL_COLOURS = {
+        "Good": "green",
+        "Moderate": "purple",
+        "Unhealthy": "#A18E4A",
+        "Very unhealthy": "orange",
+        "Hazardous": "red",
+        };
+
         const btn = document.getElementById("check-btn");
         const dropdown = document.getElementById("regions");
-        const result = document.getElementById("result");
+        const info = document.getElementById("info");
+        const level = document.getElementById("level");
         btn.addEventListener("click", () => {
             // code here runs on every click
             //console.log(dropdown.value);
@@ -40,7 +54,9 @@
             .then(data => {
                 // data is your API's JSON, as a JS object
                 console.log(data);
-                result.textContent = `${data.query} (${data.region}): PSI ${data.psi}` ;
+                info.textContent = `${data.query} (${data.region}): PSI ${data.psi} - ` ;
+                level.textContent = `${data.level}`
+                level.style.color = LEVEL_COLOURS[data.level]
             });
         });
     </script>

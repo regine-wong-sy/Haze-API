@@ -15,6 +15,19 @@ AREA_TO_REGION = {
     "jurong": "west",
     "orchard": "central"
 }
+
+def get_level(psi):
+    if psi<=50:
+        return "Good"
+    elif psi<=100:
+        return "Moderate"
+    elif psi<=200:
+        return "Unhealthy"
+    elif psi<=300:
+        return "Very unhealthy"
+    else:
+        return "Hazardous"
+
 @app.route("/haze")
 
 def haze():
@@ -48,7 +61,7 @@ def haze():
                 "valid_regions": list(psi.keys())
         }, 400
 
-    return {"query": query, "region": region, "psi": psi[region]}
+    return {"query": query, "region": region, "psi": psi[region], "level": get_level(psi[region])}
 
 if __name__ == "__main__":
     app.run(port=8080, debug=True)
