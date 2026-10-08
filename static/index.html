@@ -2,33 +2,98 @@
 <html>
 <head>
   <title>Haze PSI in your region</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <style>
+    body {
+      background-color: #F4F5F7;
+      color: #1A1D23;
+      font-family: 'IBM Plex Sans', sans-serif;
+      margin: 0 auto;
+    }
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 36px 32px;
+    }
+    h1{
+        font-size: 28px;
+        font-weight: 600;
+        margin: 0;
+    }
+    .subtitle{
+        font-size: 14px;
+        color:#555C68;
+        margin:4px 0px 24px;
+    }
+
+    .controls {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+        margin-bottom: 24px;
+    }
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+    }
+    select, button {
+    /* applies to both */
+        height: 44px;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 15px;
+    }
+    select{
+        padding: 0 12px;
+        border: 1px solid #C2C8D1;
+        background: white;
+    }
+    button{
+        padding: 0 20px;
+        border: 0;
+        background: #1F3A5F;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+    }
+  </style>
+
+
+
+
+
 </head>
 <body>
   <!-- your elements go here -->
+  <main class="app">
+  <h1>Haze Monitor</h1>
+  <p class="subtitle">24-hr PSI . data from NEA</p>
 
-  <h1>
-    Haze Monitor
-  </h1>
-    <label for="regions">What region are you in?:</label>
+  <div class="controls">
+    <div class="field">
+        <label for="regions">Your Area:</label>
 
-    <select name="region" id="regions">
-    <option value="yishun">yishun</option>
-    <option value="bedok">bedok</option>
-    <option value="marina bay">marina bay</option>
-    <option value="jurong">jurong</option>
-    <option value="orchard">orchard</option>
-    </select>
+        <select name="region" id="regions">
+        <option value="yishun">yishun</option>
+        <option value="bedok">bedok</option>
+        <option value="marina bay">marina bay</option>
+        <option value="jurong">jurong</option>
+        <option value="orchard">orchard</option>
+        </select>
 
-    <div>
-    <button type="button" id="check-btn">Check PSI</button>
     </div>
+    <button type="button" id="check-btn">Check PSI</button>
+  </div>
+
 
     <p>
         <span id="info"></span>
         <span id="level"></span>
     </p>
 
-
+    </main>
 
     <script>
 
