@@ -148,7 +148,9 @@
         </select>
 
     </div>
+    <button type="button" id="locate-btn">Use my location</button>
     <button type="button" id="check-btn">Check PSI</button>
+    
   </div>
 
 
@@ -199,6 +201,21 @@
         "Hazardous": "#F07070",
         };
 
+        function showResult(data) {
+        // code that uses data
+         console.log(data);
+                card.hidden = false;
+                place.textContent = `${data.query} . (${data.region})`
+                psi.textContent = `${data.psi}`
+                badge.textContent = `${data.level}`
+                badge.style.background = LEVEL_COLOURS[data.level]
+
+
+                segments.forEach(seg => {
+                    seg.classList.toggle("active", seg.dataset.level === data.level);
+                });
+        }
+
         const btn = document.getElementById("check-btn");
         const dropdown = document.getElementById("regions");
         const place = document.getElementById("place");
@@ -222,19 +239,18 @@
             const url = `/haze?region=${dropdown.value}`
             fetch(url)
             .then(res => res.json())
-            .then(data => {
-                // data is your API's JSON, as a JS object
-                console.log(data);
-                card.hidden = false;
-                place.textContent = `${data.query} . (${data.region})`
-                psi.textContent = `${data.psi}`
-                badge.textContent = `${data.level}`
-                badge.style.background = LEVEL_COLOURS[data.level]
+            .then(data => showResult(data));
+        });
 
+        const locateBtn = document.getElementById("locate-btn");
 
-                segments.forEach(seg => {
-                    seg.classList.toggle("active", seg.dataset.level === data.level);
-                });
+        locateBtn.addEventListener("click", () => {
+            navigator.geolocation.getCurrentPosition(pos => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                fetch(`/haze?lat=${lat}&lon=${lon}`)
+                    .then(res => res.json())
+                    .then(data => showResult(data));
             });
         });
     </script>
