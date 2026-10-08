@@ -58,6 +58,41 @@
         font-weight: 600;
         cursor: pointer;
     }
+
+    .card{
+        background: white;
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 4px 16px rgba(20, 24, 31, 0.08);
+    }
+    .place{
+        font-size:14px;
+        color: #555C68;
+        margin-bottom:12px;
+    }
+    .reading{
+        display:flex;
+        flex-direction: row;
+        gap: 16px;
+        align-items: baseline;
+    }
+
+    .psi{
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 88px;
+        font-weight: 600;
+        line-height: 1 /*removes extra space above and below the big text*/
+    }
+
+
+    .badge{
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+
   </style>
 
 
@@ -88,10 +123,15 @@
   </div>
 
 
-    <p>
-        <span id="info"></span>
-        <span id="level"></span>
-    </p>
+    <div class="card" id="card">
+        <div class="place" id="place"></div>
+        <div class="reading">
+            <span class="psi" id="psi"></span>
+            <span class="badge" id="badge"></span>
+        </div>
+
+    </div>
+
 
     </main>
 
@@ -99,17 +139,18 @@
 
 
         const LEVEL_COLOURS = {
-        "Good": "green",
-        "Moderate": "purple",
-        "Unhealthy": "#A18E4A",
-        "Very unhealthy": "orange",
-        "Hazardous": "red",
+        "Good": "#7FD39A",
+        "Moderate": "#8DB8FF",
+        "Unhealthy": "#F6C343",
+        "Very unhealthy": "#F5A35C",
+        "Hazardous": "#F07070",
         };
 
         const btn = document.getElementById("check-btn");
         const dropdown = document.getElementById("regions");
-        const info = document.getElementById("info");
-        const level = document.getElementById("level");
+        const place = document.getElementById("place");
+        const psi = document.getElementById("psi");
+        const badge = document.getElementById("badge");
         btn.addEventListener("click", () => {
             // code here runs on every click
             //console.log(dropdown.value);
@@ -119,9 +160,10 @@
             .then(data => {
                 // data is your API's JSON, as a JS object
                 console.log(data);
-                info.textContent = `${data.query} (${data.region}): PSI ${data.psi} - ` ;
-                level.textContent = `${data.level}`
-                level.style.color = LEVEL_COLOURS[data.level]
+                place.textContent = `${data.query} . (${data.region})`
+                psi.textContent = `${data.psi}`
+                badge.textContent = `${data.level}`
+                badge.style.color = LEVEL_COLOURS[data.level]
             });
         });
     </script>
