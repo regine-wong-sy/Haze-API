@@ -28,6 +28,7 @@ def get_level(psi):
     else:
         return "Hazardous"
 
+app.send_static_file("index.html")
 @app.route("/haze")
 
 def haze():
