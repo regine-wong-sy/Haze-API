@@ -121,7 +121,16 @@
         color: #1A1D23;
         font-weight: 600;
     }
-
+    #chart { 
+        width: 100%; 
+        height: auto; 
+        margin-top: 8px; 
+    }
+    .chart-label { 
+        font-size: 13px; 
+        color: #555C68; 
+        margin: 20px 0 0; 
+    }
   </style>
 
 
@@ -184,7 +193,10 @@
             </div>
         </div>
 
-
+        <p class="chart-label">Last 24 hours</p>
+        <svg id="chart" viewBox="0 0 400 120">
+            <polyline id="chart-line" fill="none" stroke="#1F3A5F" stroke-width="2" />
+        </svg>
     </div>
 
 
@@ -201,6 +213,35 @@
         "Hazardous": "#F07070",
         };
 
+        function drawChart(readings) {
+            
+            const n = readings.length;
+
+            // find the highest PSI
+            let max = 0;
+            readings.forEach(r => {
+                if (r.psi > max) max = r.psi;
+            });
+
+            // find the min PSI
+            let min = Infinity;
+            readings.forEach(r => {
+                if (r.psi < min) min = r.psi;
+            });
+            if (n < 2 || max === min) return;
+            // build the points string: "x,y x,y x,y ..."
+            let points = "";
+            readings.forEach((r, i) => {
+                const x = i / (n - 1) * 400;
+                const y = 110 - (r.psi - min) / (max - min) * 100;
+                points += `${x},${y} `;
+            });
+
+            // put it on the line
+            chartLine.setAttribute("points", points);
+        }
+
+
         function showResult(data) {
         // code that uses data
          console.log(data);
@@ -209,7 +250,9 @@
                 psi.textContent = `${data.psi}`
                 badge.textContent = `${data.level}`
                 badge.style.background = LEVEL_COLOURS[data.level]
-
+                fetch(`/haze/history?region=${data.region}`)
+                    .then(res => res.json())
+                    .then(history => drawChart(history.readings));
 
                 segments.forEach(seg => {
                     seg.classList.toggle("active", seg.dataset.level === data.level);
@@ -221,7 +264,7 @@
         const place = document.getElementById("place");
         const psi = document.getElementById("psi");
         const badge = document.getElementById("badge");
-
+        const chartLine = document.getElementById("chart-line");
 
         const segments = document.querySelectorAll(".segment");
 
