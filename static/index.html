@@ -92,6 +92,35 @@
         font-weight: 600;
     }
 
+    .scale{
+        display:flex;
+        flex-direction: row;
+        gap:3px; 
+        margin-top:20px;
+    }
+    .segment{
+        flex: 1;
+        display:flex;
+        flex-direction: column;
+        gap:6px;
+        font-size: 11px;
+        color:#555C68;
+    }
+    .bar{
+        opacity: 0.35;
+        height: 8px;
+        border-radius:4px;
+        background:#D5D9E0;
+    }
+
+    .segment.active .bar{
+        opacity: 1;
+        box-shadow: 0 0 0 2px #1A1D23;
+    }
+    .segment.active span{
+        color: #1A1D23;
+        font-weight: 600;
+    }
 
   </style>
 
@@ -123,12 +152,36 @@
   </div>
 
 
-    <div class="card" id="card">
+    <div hidden class="card" id="card">
         <div class="place" id="place"></div>
         <div class="reading">
             <span class="psi" id="psi"></span>
             <span class="badge" id="badge"></span>
         </div>
+
+        <div class="scale">
+            <div class="segment" data-level="Good">
+                <div class="bar"></div>
+                <span>Good</span>
+            </div>
+            <div class="segment" data-level="Moderate">
+                <div class="bar"></div>
+                <span>Moderate</span>
+            </div>
+            <div class="segment" data-level="Unhealthy">
+                <div class="bar"></div>
+                <span>Unhealthy</span>
+            </div>
+            <div class="segment" data-level="Very unhealthy">
+                <div class="bar"></div>
+                <span>Very unhealthy</span>
+            </div>
+            <div class="segment" data-level="Hazardous">
+                <div class="bar"></div>
+                <span>Hazardous</span>
+            </div>
+        </div>
+
 
     </div>
 
@@ -151,6 +204,18 @@
         const place = document.getElementById("place");
         const psi = document.getElementById("psi");
         const badge = document.getElementById("badge");
+
+
+        const segments = document.querySelectorAll(".segment");
+
+        segments.forEach(seg => {
+            // runs once per segment; seg is the current one
+            const level = seg.dataset.level;
+            const color = LEVEL_COLOURS[level];
+            seg.querySelector(".bar").style.background = color;
+        });
+        //hidden
+        const card = document.getElementById("card");
         btn.addEventListener("click", () => {
             // code here runs on every click
             //console.log(dropdown.value);
@@ -160,10 +225,16 @@
             .then(data => {
                 // data is your API's JSON, as a JS object
                 console.log(data);
+                card.hidden = false;
                 place.textContent = `${data.query} . (${data.region})`
                 psi.textContent = `${data.psi}`
                 badge.textContent = `${data.level}`
-                badge.style.color = LEVEL_COLOURS[data.level]
+                badge.style.background = LEVEL_COLOURS[data.level]
+
+
+                segments.forEach(seg => {
+                    seg.classList.toggle("active", seg.dataset.level === data.level);
+                });
             });
         });
     </script>
