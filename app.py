@@ -11,6 +11,11 @@ def haze():
     psi = data["items"][0]["readings"]["psi_twenty_four_hourly"]
     
     region = request.args.get("region")
+    if region not in psi:
+        return {"error": "Invalid Region",
+                "valid_regions": list(psi.keys())
+        }, 400
+
     return {"region": region, "psi": psi[region]}
 
 if __name__ == "__main__":
