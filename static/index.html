@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Haze PSI in your region</title>
+</head>
+<body>
+  <!-- your elements go here -->
+
+  <h1>
+    Haze Monitor
+  </h1>
+    <label for="regions">What region are you in?:</label>
+
+    <select name="region" id="regions">
+    <option value="yishun">yishun</option>
+    <option value="bedok">bedok</option>
+    <option value="marina bay">marina bay</option>
+    <option value="jurong">jurong</option>
+    <option value="orchard">orchard</option>
+    </select>
+
+    <div>
+    <button type="button" id="check-btn">Check PSI</button>
+    </div>
+
+    <p id="result"></p>
+
+
+
+    <script>
+        const btn = document.getElementById("check-btn");
+        const dropdown = document.getElementById("regions");
+        const result = document.getElementById("result");
+        btn.addEventListener("click", () => {
+            // code here runs on every click
+            //console.log(dropdown.value);
+            const url = `/haze?region=${dropdown.value}`
+            fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                // data is your API's JSON, as a JS object
+                console.log(data);
+                result.textContent = `${data.query} (${data.region}): PSI ${data.psi}` ;
+            });
+        });
+    </script>
+</body>
+</html>
