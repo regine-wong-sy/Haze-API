@@ -131,6 +131,36 @@
         color: #555C68; 
         margin: 20px 0 0; 
     }
+
+
+    /* ai chat bot */
+    .ask-card{
+        margin-top: 24px;
+    }
+    .ask-card textarea{
+        width: 100%;
+        box-sizing: border-box; /*keeps padding inside the width*/
+        min-height: 72px;
+        padding: 12px;
+        border: 1px solid #C2C8D1;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 15px;
+        resize: vertical;
+    }
+    .ask-card button{
+        margin-top: 10px;
+    }
+    button:disabled{
+        opacity: 0.5;
+        cursor: default;
+    }
+    .agent-answer{
+        white-space: pre-wrap; /*keeps the line breaks from the agent*/
+        font-size: 15px;
+        line-height: 1.5;
+        margin-top: 16px;
+    }
   </style>
 
 
@@ -199,6 +229,12 @@
         </svg>
     </div>
 
+        <div class="card ask-card">
+        <div class="place">Ask the Haze Agent . NEA + MOM guidelines</div>
+        <textarea id="agent-question" placeholder="Can construction workers here work outside right now?"></textarea>
+        <button type="button" id="agent-btn">Ask</button>
+        <div class="agent-answer" id="agent-answer"></div>
+    </div>
 
     </main>
 
@@ -294,6 +330,36 @@
                 fetch(`/haze?lat=${lat}&lon=${lon}`)
                     .then(res => res.json())
                     .then(data => showResult(data));
+            });
+        });
+
+        const AGENT_URL = "https://haze-agent.onrender.com";
+
+        const agentBtn = document.getElementById("agent-btn");
+        const agentQuestion = document.getElementById("agent-question");
+        const agentAnswer = document.getElementById("agent-answer");
+
+        agentBtn.addEventListener("click", () => {
+            // add the selected area so the agent knows where
+            const question = `${agentQuestion.value} (area: ${dropdown.value})`;
+
+            //show loading state
+            agentBtn.disabled = true;
+            agentAnswer.textContent = "Thinking... (first request can take up to a minute)";
+
+            fetch(`${AGENT_URL}/ask`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: question })
+            })
+            .then(res => res.json())
+            .then(data => {
+                agentBtn.disabled = false;
+                agentAnswer.textContent = data.answer || data.error;
+            })
+            .catch(err => {
+                agentBtn.disabled = false;
+                agentAnswer.textContent = "Request failed: " + err;
             });
         });
     </script>
