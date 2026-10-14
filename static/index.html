@@ -347,19 +347,32 @@
             agentBtn.disabled = true;
             agentAnswer.textContent = "Thinking... (first request can take up to a minute)";
 
+            //give up after 100s instead of hanging forever, and show progress
+            const controller = new AbortController();
+            const started = Date.now();
+            const timer = setTimeout(() => controller.abort(), 100000);
+            const progress = setInterval(() => {
+                const secs = Math.round((Date.now() - started) / 1000);
+                agentAnswer.textContent = `Thinking... ${secs}s (the agent can be slow after a quiet period)`;
+            }, 1000);
+            const done = () => { clearTimeout(timer); clearInterval(progress); agentBtn.disabled = false; };
+
             fetch(`${AGENT_URL}/ask`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ question: question })
+                body: JSON.stringify({ question: question }),
+                signal: controller.signal
             })
             .then(res => res.json())
             .then(data => {
-                agentBtn.disabled = false;
+                done();
                 agentAnswer.textContent = data.answer || data.error;
             })
             .catch(err => {
-                agentBtn.disabled = false;
-                agentAnswer.textContent = "Request failed: " + err;
+                done();
+                agentAnswer.textContent = err.name === "AbortError"
+                    ? "The agent took too long to respond. Please try again."
+                    : "Request failed: " + err;
             });
         });
     </script>
